@@ -1,2 +1,2 @@
-# mpx
+# MPX
 Meta PySide eXtras
