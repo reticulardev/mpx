@@ -12,12 +12,21 @@ from MPX import QtWidgetsMPX
 from __feature__ import snake_case
 
 
-class Window(QtWidgetsMPX.ApplicationFrame):
+class Window(QtWidgetsMPX.ApplicationWindow):
     """..."""
 
     def __init__(self, *args, **kwargs):
         """..."""
         super().__init__(*args, **kwargs)
+        # Icon
+        icon_path = os.path.join(SRC_DIR, 'icon.svg')
+        self.__app_icon = QtGui.QIcon(QtGui.QPixmap(icon_path))
+        self.set_window_icon(self.__app_icon)
+        self.set_header_bar_icon(self.window_icon())
+
+        # Title
+        self.set_window_title("My custom MPX app")
+        self.set_header_bar_title(self.window_title())
 
 
 class Application(object):
