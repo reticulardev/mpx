@@ -28,7 +28,7 @@ from __feature__ import snake_case
 #         self.set_window_title("My custom MPX app")
 #         # self.set_header_bar_title(self.window_title())
 
-class Window(QtWidgetsMPX.SideBarApplicationWindow):
+class Window(QtWidgetsMPX.QSideBarApplicationWindow):
     """..."""
 
     def __init__(self, *args, **kwargs):
@@ -44,8 +44,10 @@ class Window(QtWidgetsMPX.SideBarApplicationWindow):
         self.set_window_title("My custom MPX app")
         # self.set_header_bar_title(self.window_title())
 
-        for i in range(10):
-            self.side_view_layout().add_widget(QtWidgets.QLabel(str(i)))
+        for i in ['Home', 'Download', 'Image', 'Document', 'Video', 'Music']:
+            self.label = QtWidgets.QLabel(str(i))
+            self.label.set_style_sheet('font-size: 14px; padding: 5px;')
+            self.side_view_layout().add_widget(self.label)
 
 
 class Application(object):
