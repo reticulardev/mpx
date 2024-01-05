@@ -32,7 +32,7 @@
      inkscape:window-x="0"
      inkscape:window-y="32"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g305" /><defs
+     inkscape:current-layer="g283" /><defs
      id="defs1"><rect
        x="-1239.5035"
        y="-105.80162"
@@ -485,16 +485,9 @@
              id="g305"
              transform="translate(-496.11907,-448.78039)"><g
                id="g283"
-               transform="matrix(1.9999981,0,0,2,965.70947,1090.2447)"><rect
-                 style="fill:#636363;fill-opacity:0;stroke-width:0.366219;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.656086;paint-order:markers stroke fill"
-                 id="rect281"
-                 width="6.3500061"
-                 height="6.3499999"
-                 x="-73.554306"
-                 y="-457.59042"
-                 ry="1.2641975" /><g
+               transform="matrix(1.9999981,0,0,2,965.70947,1090.2447)"><g
                  id="g282"
-                 transform="matrix(0.09879646,-0.043986,0.0426908,0.10179387,-51.487116,-461.47924)"><path
+                 transform="matrix(0.128466,-0.05719542,0.05551126,0.13236357,-45.813607,-463.60058)"><path
                    sodipodi:type="star"
                    style="fill:#754bad;fill-opacity:1;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.656086;paint-order:markers stroke fill"
                    id="path281"

@@ -13,53 +13,7 @@ from MPX.pysidex.src.PySideX import QtWidgetsX
 from __feature__ import snake_case
 
 
-class QApplicationWindow(QtWidgetsX.QApplicationWindow):
-    """..."""
-
-    def __init__(self, *args, **kwargs) -> None:
-        """Class constructor
-
-        Initialize class attributes
-        """
-        super().__init__(*args, **kwargs)
-        self.__screen = self.screen()
-        self.set_window_title('MPX Application Frame')
-
-        # Icon
-        icon_path = os.path.join(SRC_DIR, 'icon.svg')
-        self.__app_icon = QtGui.QIcon(QtGui.QPixmap(icon_path))
-        self.set_window_icon(self.__app_icon)
-
-        self.set_minimum_width(self.__min_width())
-        self.set_minimum_height(500)
-
-        self.__main_layout = QtWidgets.QVBoxLayout()
-        self.__main_layout.set_contents_margins(0, 0, 0, 0)
-        self.__main_layout.set_alignment(QtCore.Qt.AlignTop)
-        self.central_widget().set_layout(self.__main_layout)
-
-        self.__headerbar = QtWidgetsX.QHeaderBar(self)
-        self.__main_layout.add_widget(self.__headerbar)
-
-    def main_layout(self) -> QtWidgets.QVBoxLayout:
-        """..."""
-        return self.__main_layout
-
-    def set_header_bar_icon(self, icon: QtGui.QIcon) -> None:
-        """..."""
-        self.set_window_icon(icon)
-        self.__headerbar.set_window_icon(icon)
-
-    def set_header_bar_title(self, text: str) -> None:
-        """..."""
-        self.__headerbar.set_text(text)
-
-    def __min_width(self) -> int:
-        # Min window width value
-        return 300 if self.__screen.size().width() <= 500 else 500
-
-
-class QWidgetColor(QtWidgets.QWidget):
+class QColorWidget(QtWidgets.QWidget):
     """..."""
 
     def __init__(self, color: str | None = None, *args, **kwargs):
@@ -77,8 +31,8 @@ class QWidgetColor(QtWidgets.QWidget):
         layout.add_widget(QtWidgets.QLabel(' '))
 
 
-class QSideBarApplicationWindow(QtWidgetsX.QApplicationWindow):
-    """..."""
+class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
+    """Window with side panel"""
     resize_event_signal = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs) -> None:
@@ -88,13 +42,16 @@ class QSideBarApplicationWindow(QtWidgetsX.QApplicationWindow):
         """
         super().__init__(*args, **kwargs)
         # Flags
+        self.__border_size = 12
+
         self.__h_side_width = 250
-        self.__h_side_gap = 80
+        self.__h_side_gap = 50
 
         self.__v_side_width = 300
         self.__v_side_gap = 0
 
-        self.__width_flip = self.__h_side_width + self.__h_side_gap + 1
+        self.__width_flip = (self.__h_side_width + self.__h_side_gap) * 2 + 1
+        self.__is_vertical = False
 
         # Settings
         self.__screen = self.screen()
@@ -109,31 +66,34 @@ class QSideBarApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__app_icon = QtGui.QIcon(QtGui.QPixmap(icon_path))
         self.set_window_icon(self.__app_icon)
 
+        # Main layout
         self.__main_layout = QtWidgets.QHBoxLayout()
         self.__main_layout.set_contents_margins(0, 0, 0, 0)
         self.__main_layout.set_spacing(0)
-        self.__main_layout.set_alignment(QtCore.Qt.AlignTop)
         self.central_widget().set_layout(self.__main_layout)
 
         # Side view
-        self.__sideview_layout = QtWidgets.QVBoxLayout()
-        self.__sideview_layout.set_alignment(QtCore.Qt.AlignTop)
-        self.__main_layout.add_layout(self.__sideview_layout)
-
-        self.__sideview_headerbar = QtWidgetsX.QHeaderBar(self)
-        self.__sideview_headerbar.set_maximum_width(self.__h_side_width)
-        self.__sideview_headerbar.set_right_control_buttons_visible(False)
-        self.__sideview_layout.add_widget(self.__sideview_headerbar)
-
         self.__sideview_widget = QtWidgets.QWidget()
         self.__sideview_widget.set_fixed_width(self.__h_side_width)
-        self.__sideview_layout.add_widget(self.__sideview_widget, 9)
+        self.__main_layout.add_widget(self.__sideview_widget, 9)
 
-        self.__sideview_layout_new = QtWidgets.QVBoxLayout()
-        self.__sideview_layout_new.set_alignment(QtCore.Qt.AlignTop)
-        self.__sideview_widget.set_layout(self.__sideview_layout_new)
+        self.__sideview_top_layout = QtWidgets.QVBoxLayout()
+        self.__sideview_top_layout.set_contents_margins(0, 0, 0, 0)
+        self.__sideview_top_layout.set_alignment(QtCore.Qt.AlignTop)
+        self.__sideview_widget.set_layout(self.__sideview_top_layout)
+
+        self.__sideview_headerbar = QtWidgetsX.QHeaderBar(self)
+        self.__sideview_headerbar.set_contents_margins(0, 0, 0, 0)
+        self.__sideview_headerbar.set_right_control_buttons_visible(False)
+        self.__sideview_top_layout.add_widget(self.__sideview_headerbar)
 
         self.set_side_view_color()
+
+        self.__sideview_layout = QtWidgets.QVBoxLayout()
+        self.__sideview_layout.set_contents_margins(
+            self.__border_size, 0, self.__border_size, self.__border_size)
+        self.__sideview_layout.set_alignment(QtCore.Qt.AlignTop)
+        self.__sideview_top_layout.add_layout(self.__sideview_layout)
 
         # Page view
         self.__pageview_layout = QtWidgets.QVBoxLayout()
@@ -145,22 +105,6 @@ class QSideBarApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__pageview_layout.add_widget(self.__pageview_headerbar)
 
         self._resize_event_signal.connect(self._resize_event)
-
-    def _resize_event(self, event: QtGui.QResizeEvent) -> None:
-        logging.info(event)
-
-        if self.size().width() < self.__width_flip:
-            print('Flip...')
-
-        # Control buttons visibility
-        if self.is_maximized():
-            if self.platform_settings().window_use_global_menu():
-                self.__sideview_headerbar.set_left_control_buttons_visible(
-                    False)
-        elif self.is_full_screen():
-            self.__sideview_headerbar.set_left_control_buttons_visible(False)
-        else:
-            self.__sideview_headerbar.set_left_control_buttons_visible(True)
 
     def main_layout(self) -> QtWidgets.QHBoxLayout:
         """..."""
@@ -180,33 +124,61 @@ class QSideBarApplicationWindow(QtWidgetsX.QApplicationWindow):
         """..."""
         self.__pageview_headerbar.set_text(text)
 
-    def set_side_view_color(self, color: tuple = (0, 0, 0, 0.1)):
-        self.__sideview_widget.set_object_name('side_widget_style')
-        self.__sideview_headerbar.set_object_name('side_headerbar_style')
-        self.__sideview_layout.set_object_name('sideview_layout_style')
-
-        radius = self.platform_settings().window_border_radius()
-        self.set_style_sheet(
-            '#sideview_layout_style {width: 300px;}'
-            '#side_headerbar_style {'
-            '   background-color: '
-            f'    rgba({color[0]}, {color[1]}, {color[2]}, {color[3]});'
-            f'   border-top-left-radius: {radius[0]};'
-            '   margin: 1px 0px 0px 1px;}'
-            '#side_widget_style {'
-            '   background-color: '
-            f'    rgba({color[0]}, {color[1]}, {color[2]}, {color[3]});'
-            f'   border-bottom-left-radius: {radius[3]};'
-            '   margin: 0px 0px 1px 1px;}')
+    def set_side_view_color(self, color: tuple = (0, 0, 0, 0.1)) -> None:
+        """..."""
+        self.set_style_sheet(self.__side_view_color(color))
 
     def side_view_layout(self) -> QtWidgets.QVBoxLayout:
         """..."""
-        return self.__sideview_layout_new
+        return self.__sideview_layout
+
+    def __side_view_color(self, color: tuple = (0, 0, 0, 0.1)) -> str:
+        self.__sideview_widget.set_object_name('side_widget_style')
+        radius = self.platform_settings().window_border_radius()
+        return (
+            '#side_widget_style {'
+            'background-color:'
+            f'rgba({color[0]}, {color[1]}, {color[2]}, {color[3]});'
+            f'border-bottom-left-radius: {radius[3]};'
+            'margin: 0px 0px 1px 1px; padding: 0px;}')
+
+    def _resize_event(self, event: QtGui.QResizeEvent) -> None:
+        logging.info(event)
+        self.__switch_vertical_and_horizontal_window()
+        self.__visibility_of_window_control_buttons()
 
     def __initial_width(self) -> int:
         # Vertical
-        if (self.__screen.size().width() <
-                (self.__h_side_width + self.__h_side_gap) < 500):
-            return self.__h_side_width
+        if self.__screen.size().width() < self.__h_side_width < 500:
+            # Sets do view
+            return self.__h_side_width + self.__h_side_gap
         # Horizontal
         return self.__h_side_width * 3
+
+    def __switch_vertical_and_horizontal_window(self) -> None:
+        if not self.__is_vertical and self.size().width() < self.__width_flip:
+            self.__is_vertical = True
+            self.__switch_to_vertical()
+            print('Flip - vertical...')
+        elif self.__is_vertical and self.size().width() > self.__width_flip:
+            self.__is_vertical = False
+            self.__switch_to_horizontal()
+            print('Flip - horizontal...')
+
+    def __switch_to_vertical(self) -> None:
+        self.__sideview_widget.set_visible(False)
+        self.__pageview_headerbar.set_left_control_buttons_visible(True)
+
+    def __switch_to_horizontal(self) -> None:
+        self.__sideview_widget.set_visible(True)
+        self.__pageview_headerbar.set_left_control_buttons_visible(False)
+
+    def __visibility_of_window_control_buttons(self) -> None:
+        if self.is_maximized():
+            if self.platform_settings().window_use_global_menu():
+                self.__sideview_headerbar.set_left_control_buttons_visible(
+                    False)
+        elif self.is_full_screen():
+            self.__sideview_headerbar.set_left_control_buttons_visible(False)
+        else:
+            self.__sideview_headerbar.set_left_control_buttons_visible(True)
