@@ -13,6 +13,12 @@ from MPX.pysidex.src.PySideX import QtWidgetsX
 from __feature__ import snake_case
 
 
+class QToolButton(QtWidgets.QToolButton):
+    """..."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
 class QColorWidget(QtWidgets.QWidget):
     """..."""
 
@@ -73,79 +79,87 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.central_widget().set_layout(self.__main_layout)
 
         # Side view
-        self.__sideview_widget = QtWidgets.QWidget()
-        self.__sideview_widget.set_fixed_width(self.__h_side_width)
-        self.__main_layout.add_widget(self.__sideview_widget, 9)
+        self.__side_panel_widget = QtWidgets.QWidget()
+        self.__side_panel_widget.set_contents_margins(0, 0, 0, 0)
+        self.__side_panel_widget.set_fixed_width(self.__h_side_width)
+        self.__main_layout.add_widget(self.__side_panel_widget, 9)
 
-        self.__sideview_top_layout = QtWidgets.QVBoxLayout()
-        self.__sideview_top_layout.set_contents_margins(0, 0, 0, 0)
-        self.__sideview_top_layout.set_alignment(QtCore.Qt.AlignTop)
-        self.__sideview_widget.set_layout(self.__sideview_top_layout)
+        self.__side_panel_top_layout = QtWidgets.QVBoxLayout()
+        self.__side_panel_top_layout.set_contents_margins(0, 0, 0, 0)
+        self.__side_panel_top_layout.set_alignment(QtCore.Qt.AlignTop)
+        self.__side_panel_widget.set_layout(self.__side_panel_top_layout)
 
-        self.__sideview_headerbar = QtWidgetsX.QHeaderBar(self)
-        self.__sideview_headerbar.set_contents_margins(0, 0, 0, 0)
-        self.__sideview_headerbar.set_right_control_buttons_visible(False)
-        self.__sideview_top_layout.add_widget(self.__sideview_headerbar)
+        self.__side_panel_headerbar = QtWidgetsX.QHeaderBar(self)
+        self.__side_panel_headerbar.set_contents_margins(0, 0, 0, 0)
+        self.__side_panel_headerbar.set_right_control_buttons_visible(False)
+        self.__side_panel_top_layout.add_widget(self.__side_panel_headerbar)
 
-        self.set_side_view_color()
+        self.__darken_side_panel()
 
-        self.__sideview_layout = QtWidgets.QVBoxLayout()
-        self.__sideview_layout.set_contents_margins(
+        self.__side_panel_layout = QtWidgets.QVBoxLayout()
+        self.__side_panel_layout.set_contents_margins(
             self.__border_size, 0, self.__border_size, self.__border_size)
-        self.__sideview_layout.set_alignment(QtCore.Qt.AlignTop)
-        self.__sideview_top_layout.add_layout(self.__sideview_layout)
+        self.__side_panel_layout.set_alignment(QtCore.Qt.AlignTop)
+        self.__side_panel_top_layout.add_layout(self.__side_panel_layout)
 
-        # Page view
-        self.__pageview_layout = QtWidgets.QVBoxLayout()
-        self.__pageview_layout.set_alignment(QtCore.Qt.AlignTop)
-        self.__main_layout.add_layout(self.__pageview_layout)
+        # Frame view
+        self.__frame_view_top_layout = QtWidgets.QVBoxLayout()
+        self.__frame_view_top_layout.set_alignment(QtCore.Qt.AlignTop)
+        self.__main_layout.add_layout(self.__frame_view_top_layout)
 
-        self.__pageview_headerbar = QtWidgetsX.QHeaderBar(self)
-        self.__pageview_headerbar.set_left_control_buttons_visible(False)
-        self.__pageview_layout.add_widget(self.__pageview_headerbar)
+        self.__frame_view_headerbar = QtWidgetsX.QHeaderBar(self)
+        self.__frame_view_headerbar.set_left_control_buttons_visible(False)
+        self.__frame_view_top_layout.add_widget(self.__frame_view_headerbar)
 
+        self.__view_panel_button = QtWidgets.QToolButton()
+        self.__view_panel_button.set_icon(
+            QtGui.QIcon.from_theme('sidebar-collapse'))
+        self.__frame_view_headerbar.add_widget_to_left(
+            self.__view_panel_button)
+        self.__view_panel_button.set_visible(False)
+
+        self.__frame_view_layout = QtWidgets.QVBoxLayout()
+        self.__frame_view_layout.set_contents_margins(
+            self.__border_size, 0, self.__border_size, self.__border_size)
+        self.__frame_view_layout.set_alignment(QtCore.Qt.AlignTop)
+        self.__frame_view_top_layout.add_layout(self.__frame_view_layout)
+
+        # Resize
         self._resize_event_signal.connect(self._resize_event)
 
-    def main_layout(self) -> QtWidgets.QHBoxLayout:
+    def frame_view_layout(self) -> QtWidgets.QVBoxLayout:
         """..."""
-        return self.__main_layout
-
-    def page_view_layout(self) -> QtWidgets.QVBoxLayout:
-        """..."""
-        return self.__pageview_layout
+        return self.__frame_view_layout
 
     def set_header_bar_icon(self, icon: QtGui.QIcon) -> None:
         """..."""
         self.set_window_icon(icon)
-        self.__sideview_headerbar.set_window_icon(icon)
-        self.__pageview_headerbar.set_window_icon(icon)
+        self.__side_panel_headerbar.set_window_icon(icon)
+        self.__frame_view_headerbar.set_window_icon(icon)
 
     def set_header_bar_title(self, text: str) -> None:
         """..."""
-        self.__pageview_headerbar.set_text(text)
+        self.__frame_view_headerbar.set_text(text)
 
-    def set_side_view_color(self, color: tuple = (0, 0, 0, 0.1)) -> None:
+    def side_panel_layout(self) -> QtWidgets.QVBoxLayout:
         """..."""
-        self.set_style_sheet(self.__side_view_color(color))
-
-    def side_view_layout(self) -> QtWidgets.QVBoxLayout:
-        """..."""
-        return self.__sideview_layout
-
-    def __side_view_color(self, color: tuple = (0, 0, 0, 0.1)) -> str:
-        self.__sideview_widget.set_object_name('side_widget_style')
-        radius = self.platform_settings().window_border_radius()
-        return (
-            '#side_widget_style {'
-            'background-color:'
-            f'rgba({color[0]}, {color[1]}, {color[2]}, {color[3]});'
-            f'border-bottom-left-radius: {radius[3]};'
-            'margin: 0px 0px 1px 1px; padding: 0px;}')
+        return self.__side_panel_layout
 
     def _resize_event(self, event: QtGui.QResizeEvent) -> None:
         logging.info(event)
         self.__switch_vertical_and_horizontal_window()
         self.__visibility_of_window_control_buttons()
+
+    def __darken_side_panel(self, color: tuple = (0, 0, 0, 0.1)) -> None:
+        """..."""
+        self.__side_panel_widget.set_object_name('side_widget_style')
+        radius = self.platform_settings().window_border_radius()
+        self.__side_panel_widget.set_style_sheet(
+            '#side_widget_style {'
+            'background-color:'
+            f'rgba({color[0]}, {color[1]}, {color[2]}, {color[3]});'
+            f'border-bottom-left-radius: {radius[3]};'
+            'margin: 0px 0px 1px 1px; padding: 0px;}')
 
     def __initial_width(self) -> int:
         # Vertical
@@ -156,29 +170,32 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         return self.__h_side_width * 3
 
     def __switch_vertical_and_horizontal_window(self) -> None:
+        # Vertical
         if not self.__is_vertical and self.size().width() < self.__width_flip:
             self.__is_vertical = True
             self.__switch_to_vertical()
-            print('Flip - vertical...')
+
+        # Horizontal
         elif self.__is_vertical and self.size().width() > self.__width_flip:
             self.__is_vertical = False
             self.__switch_to_horizontal()
-            print('Flip - horizontal...')
 
     def __switch_to_vertical(self) -> None:
-        self.__sideview_widget.set_visible(False)
-        self.__pageview_headerbar.set_left_control_buttons_visible(True)
+        self.__side_panel_widget.set_visible(False)
+        self.__frame_view_headerbar.set_left_control_buttons_visible(True)
+        self.__view_panel_button.set_visible(True)
 
     def __switch_to_horizontal(self) -> None:
-        self.__sideview_widget.set_visible(True)
-        self.__pageview_headerbar.set_left_control_buttons_visible(False)
+        self.__side_panel_widget.set_visible(True)
+        self.__frame_view_headerbar.set_left_control_buttons_visible(False)
+        self.__view_panel_button.set_visible(False)
 
     def __visibility_of_window_control_buttons(self) -> None:
         if self.is_maximized():
             if self.platform_settings().window_use_global_menu():
-                self.__sideview_headerbar.set_left_control_buttons_visible(
+                self.__side_panel_headerbar.set_left_control_buttons_visible(
                     False)
         elif self.is_full_screen():
-            self.__sideview_headerbar.set_left_control_buttons_visible(False)
+            self.__side_panel_headerbar.set_left_control_buttons_visible(False)
         else:
-            self.__sideview_headerbar.set_left_control_buttons_visible(True)
+            self.__side_panel_headerbar.set_left_control_buttons_visible(True)
