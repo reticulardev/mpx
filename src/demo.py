@@ -26,18 +26,17 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
 
         # Title
         self.set_window_title("My custom MPX app")
-        # self.set_header_bar_title(self.window_title())
+        self.set_header_bar_title(self.window_title())
 
         for i in ['Home', 'Download', 'Image', 'Document', 'Video', 'Music']:
             self.label = QtWidgets.QLabel(str(i))
             self.side_panel_layout().add_widget(self.label)
 
-        # for i in ['AAAA', 'BBBB', 'CCCC', 'DDDD', 'EEEE', 'FFFF']:
-        for i in ['Home', 'Download', 'Image', 'Document', 'Video', 'Music']:
-            self.label = QtWidgets.QLabel(str(i))
+        for i in range(10):
+            self.label = QtWidgets.QLabel('Content ' * 7)
             self.frame_view_layout().add_widget(self.label)
 
-        self.set_style_sheet('QLabel {font-size: 14px;}')
+        # self.set_style_sheet('QLabel {font-size: 14px;}')
 
 
 class Application(object):

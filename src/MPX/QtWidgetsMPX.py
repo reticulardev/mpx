@@ -52,31 +52,82 @@ class FloatingWidget(QtWidgets.QWidget):
             QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowType.Drawer)
 
         self.__parent = parent
-        self.__panel_widget = panel_widget
-        self.__top_panel_layout = top_panel_layout
+        self.__parent_widget = panel_widget
+        self.__parent_top_layout = top_panel_layout
 
+        # Color and border
+        bg_color = self.__parent.palette().color(QtGui.QPalette.Window)
+        bg_radius = self.__parent.platform_settings().window_border_radius()
+
+        # layout
         self.__main_layout = QtWidgets.QVBoxLayout()
-        self.__main_layout.set_contents_margins(0, 0, 0, 0)
+        self.__main_layout.set_contents_margins(6, 6, 6, 6)
+        self.__main_layout.set_spacing(0)
         self.set_layout(self.__main_layout)
 
-        self.__panel = QtWidgets.QWidget()
-        self.__panel.set_object_name('float_panel_style')
-        self.__panel.set_style_sheet(
-            '#float_panel_style {'
+        self.__main_frame_widget = QtWidgets.QWidget()
+        self.__main_frame_widget.set_contents_margins(0, 0, 0, 0)
+        self.__main_frame_widget.set_object_name('mainframewidgetstyle')
+        self.__main_frame_widget.set_style_sheet(
+            '#mainframewidgetstyle {'
+            'background-color: rgba(0, 0, 0, 0.0);'
+            f'border-top-left-radius: {bg_radius[0]};'
+            f'border-top-right-radius: {bg_radius[1]};'
+            f'border-bottom-left-radius: {bg_radius[3]};'
+            f'border-bottom-right-radius: {bg_radius[2]};'
+            '}')
+        self.__main_layout.add_widget(self.__main_frame_widget)
+
+        self.__h_layout = QtWidgets.QHBoxLayout()
+        self.__h_layout.set_contents_margins(0, 0, 0, 0)
+        self.__h_layout.set_spacing(0)
+        self.__h_layout.set_alignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.__main_frame_widget.set_layout(self.__h_layout)
+
+        # Panel
+        self.__panel_widget = QtWidgets.QWidget()
+        self.__panel_widget.set_contents_margins(0, 0, 0, 0)
+        self.__panel_widget.set_fixed_width(250)
+        self.__panel_widget.set_object_name('panelwidgetstyle')
+        self.__panel_widget.set_style_sheet(
+            '#panelwidgetstyle {'
             'background-color:'
-            f'rgba(0, 0, 0, 0.5);'
-            f'border-bottom-left-radius: 4;'
-            'margin: 0px 0px 1px 1px; padding: 0px;}')
-        self.__main_layout.add_widget(self.__panel)
+            f'rgba({bg_color.red()}, {bg_color.red()}, '
+            f'{bg_color.red()}, {bg_color.alpha_f()});'
+            f'border-top-left-radius: {bg_radius[0]};'
+            f'border-top-right-radius: 0;'
+            f'border-bottom-left-radius: {bg_radius[3]};'
+            'border-bottom-right-radius: 0;}')
+        self.__h_layout.add_widget(self.__panel_widget)
 
         self.__panel_layout = QtWidgets.QVBoxLayout()
-        self.__panel.set_layout(self.__panel_layout)
+        self.__panel_layout.set_contents_margins(0, 0, 0, 0)
+        self.__panel_layout.set_alignment(QtCore.Qt.AlignTop)
+        self.__panel_widget.set_layout(self.__panel_layout)
+
+        # Panel header
+        self.__close_button_layout = QtWidgets.QHBoxLayout()
+        self.__close_button_layout.set_contents_margins(0, 3, 5, 0)
+        self.__panel_layout.add_layout(self.__close_button_layout)
+
+        self.__headerbar = QtWidgetsX.QHeaderBar(self.__parent)
+        self.__headerbar.set_right_control_buttons_visible(False)
+        self.__close_button_layout.add_widget(self.__headerbar)
 
         self.__close_button = QToolButton()
         self.__close_button.set_icon(
             QtGui.QIcon.from_theme('edit-delete-remove'))
         self.__close_button.clicked.connect(self.__on_close)
-        self.__panel_layout.add_widget(self.__close_button)
+        self.__close_button_layout.add_widget(self.__close_button)
+
+        # Style
+        self.__shadow_effect = QtWidgets.QGraphicsDropShadowEffect(self)
+        self.__shadow_effect.set_blur_radius(50)
+        self.__shadow_effect.set_offset(QtCore.QPointF(0.0, 0.0))
+        self.__shadow_effect.set_color(QtGui.QColor(10, 10, 10, 180))
+        self.__panel_widget.set_graphics_effect(self.__shadow_effect)
+
+        self.set_style_sheet(self.__parent.style_sheet())
 
     def mouse_press_event(self, event: QtGui.QMouseEvent) -> None:
         if event.button() == QtCore.Qt.LeftButton and self.under_mouse():
@@ -88,8 +139,8 @@ class FloatingWidget(QtWidgets.QWidget):
         self.resize(self.__parent.width(), self.__parent.height())
 
     def __on_close(self) -> None:
-        self.__panel_layout.remove_widget(self.__panel_widget)
-        self.__top_panel_layout.add_widget(self.__panel_widget)
+        self.__panel_layout.remove_widget(self.__parent_widget)
+        self.__parent_top_layout.add_widget(self.__parent_widget)
         self.close()
 
     def main_layout(self) -> QtWidgets.QLayout:
