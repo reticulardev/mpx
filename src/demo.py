@@ -32,6 +32,11 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
             self.label = QtWidgets.QLabel(str(i))
             self.side_panel_layout().add_widget(self.label)
 
+        # for i in ['AAAA', 'BBBB', 'CCCC', 'DDDD', 'EEEE', 'FFFF']:
+        for i in ['Home', 'Download', 'Image', 'Document', 'Video', 'Music']:
+            self.label = QtWidgets.QLabel(str(i))
+            self.frame_view_layout().add_widget(self.label)
+
         self.set_style_sheet('QLabel {font-size: 14px;}')
 
 
