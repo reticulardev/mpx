@@ -33,24 +33,17 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.tbutton.set_icon(QtGui.QIcon.from_theme('search'))
         self.side_panel_header_bar().add_widget_to_right(self.tbutton)
 
-        self.btn = QtWidgets.QPushButton('Hello')
-        self.btn.clicked.connect(self.on_btn)
-        self.side_panel_layout().add_widget(self.btn)
         for i in ['Home', 'Download', 'Image', 'Document', 'Video', 'Music']:
             btn = QtWidgets.QPushButton(str(i))
+            btn.clicked.connect(self.on_btn)
             self.side_panel_layout().add_widget(btn)
 
-        self.lbl = QtWidgets.QLabel('...')
+        self.lbl = QtWidgets.QPushButton('...')
         self.frame_view_layout().add_widget(self.lbl)
         self.frame_view_layout().set_alignment(QtCore.Qt.AlignCenter)
 
     def on_btn(self):
-        if self.lbl.text() == 'Hello World!':
-            self.lbl.set_text('...')
-            self.btn.set_text('Hello')
-        else:
-            self.btn.set_text('Clear')
-            self.lbl.set_text('Hello World!')
+        self.lbl.set_text(self.sender().text())
 
 
 class Application(object):
