@@ -85,8 +85,8 @@ class QOverlayWidget(QtWidgets.QWidget):
         self.__panel_widget.set_style_sheet(
             '#panelwidgetstyle {'
             'background-color:'
-            f'rgba({bg_color.red()}, {bg_color.red()}, '
-            f'{bg_color.red()}, {bg_color.alpha_f()});'
+            f'rgba({bg_color.red()}, {bg_color.green()}, '
+            f'{bg_color.blue()}, {bg_color.alpha_f()});'
             f'border-top-left-radius: {bg_radius[0]};'
             f'border-top-right-radius: 0;'
             f'border-bottom-left-radius: {bg_radius[3]};'
@@ -181,7 +181,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__main_layout.add_widget(self.__side_panel_widget_for_width, 9)
 
         self.__side_panel_main_layout = QtWidgets.QVBoxLayout()
-        self.__side_panel_main_layout.set_contents_margins(0, 2, 0, 0)
+        self.__side_panel_main_layout.set_contents_margins(0, 0, 0, 0)
         self.__side_panel_main_layout.set_alignment(QtCore.Qt.AlignTop)
         self.__side_panel_widget_for_width.set_layout(
             self.__side_panel_main_layout)
@@ -276,7 +276,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         logging.info(event)
         self.__side_panel_overlay_widget.move(self.x(), self.y())
 
-    def __darken_side_panel(self, color: tuple = (0, 0, 0, 0.1)) -> None:
+    def __darken_side_panel(self, color: tuple = (0, 0, 0, 0.06)) -> None:
         """..."""
         radius = self.platform_settings().window_border_radius()
 
@@ -320,6 +320,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
 
     def __switch_to_vertical(self) -> None:
         self.__side_panel_widget_for_width.set_visible(False)
+
         self.__frame_view_headerbar.set_left_control_buttons_visible(True)
         self.__view_panel_button.set_visible(True)
         self.__side_panel_headerbar.set_move_area_as_enable(False)

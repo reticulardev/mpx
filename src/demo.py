@@ -43,7 +43,17 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.frame_view_layout().set_alignment(QtCore.Qt.AlignCenter)
 
         self.set_style_sheet(
-            'QToolButton {border: 0px;}'
+            'QToolButton {'
+            '   background: transparent;'
+            '   padding: 2px;'
+            '   border: 0px;'
+            '   border-radius: 3px;}'
+            'QToolButton:hover {'
+            '   background: transparent;'
+            '   padding: 2px;'
+            '   border: 0px;'
+            '   border-radius: 3px;'
+            '   background-color: rgba(127, 127, 127, 0.2);}'
         )
 
     def on_btn(self):
