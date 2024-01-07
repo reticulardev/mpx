@@ -230,7 +230,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
 
         self.__view_panel_button = QtWidgets.QToolButton()
         self.__view_panel_button.set_icon(
-            QtGui.QIcon.from_theme('sidebar-collapse'))
+            QtGui.QIcon.from_theme('page-2sides'))  # sidebar-collapse
         self.__view_panel_button.clicked.connect(self.__on_view_panel_button)
         self.__frame_view_headerbar.add_widget_to_left(
             self.__view_panel_button)
@@ -322,11 +322,13 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__side_panel_widget_for_width.set_visible(False)
         self.__frame_view_headerbar.set_left_control_buttons_visible(True)
         self.__view_panel_button.set_visible(True)
+        self.__side_panel_headerbar.set_move_area_as_enable(False)
 
     def __switch_to_horizontal(self) -> None:
         self.__side_panel_widget_for_width.set_visible(True)
         self.__frame_view_headerbar.set_left_control_buttons_visible(False)
         self.__view_panel_button.set_visible(False)
+        self.__side_panel_headerbar.set_move_area_as_enable(True)
 
     def __visibility_of_window_control_buttons(self) -> None:
         if self.is_maximized():

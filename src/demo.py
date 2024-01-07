@@ -26,7 +26,7 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
 
         # Title
         self.set_window_title("My custom MPX app")
-        self.set_header_bar_title(self.window_title())
+        # self.set_header_bar_title(self.window_title())
 
         # Search
         self.tbutton = QtWidgets.QToolButton()
