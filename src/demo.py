@@ -56,9 +56,30 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
             '   background-color: rgba(127, 127, 127, 0.2);}'
         )
 
-    def on_btn(self):
+        self.side_panel_has_opened_signal.connect(self.panel_has_opened)
+        self.side_panel_was_closed_signal.connect(self.panel_closed)
+        self.switched_to_vertical_signal.connect(self.switched_to_vertical)
+        self.switched_to_horizontal_signal.connect(self.switched_to_horizontal)
+
+    def on_btn(self) -> None:
         self.lbl.set_text(self.sender().text())
         self.close_side_panel()
+
+    @staticmethod
+    def panel_has_opened(event: QtCore.Signal) -> None:
+        print(event)
+
+    @staticmethod
+    def panel_closed(event: QtCore.Signal) -> None:
+        print(event)
+
+    @staticmethod
+    def switched_to_vertical(event: QtCore.Signal) -> None:
+        print(event)
+
+    @staticmethod
+    def switched_to_horizontal(event: QtCore.Signal):
+        print(event)
 
 
 class Application(object):
