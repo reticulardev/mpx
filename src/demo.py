@@ -42,6 +42,10 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.frame_view_layout().add_widget(self.lbl)
         self.frame_view_layout().set_alignment(QtCore.Qt.AlignCenter)
 
+        self.set_style_sheet(
+            'QToolButton {border: 0px;}'
+        )
+
     def on_btn(self):
         self.lbl.set_text(self.sender().text())
 

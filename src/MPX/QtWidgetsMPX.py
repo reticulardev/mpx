@@ -31,7 +31,7 @@ class QColorWidget(QtWidgets.QWidget):
         layout.add_widget(QtWidgets.QLabel(' '))
 
 
-class FloatingWidget(QtWidgets.QWidget):
+class QOverlayWidget(QtWidgets.QWidget):
     """..."""
 
     def __init__(
@@ -42,8 +42,7 @@ class FloatingWidget(QtWidgets.QWidget):
             *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.set_attribute(QtCore.Qt.WA_TranslucentBackground)
-        self.set_window_flags(
-            QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowType.Drawer)
+        self.set_window_flags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Popup)
 
         self.__parent = parent
         self.__parent_widget = panel_widget
@@ -120,9 +119,6 @@ class FloatingWidget(QtWidgets.QWidget):
 
         self.set_style_sheet(self.__parent.style_sheet())
 
-    # def mouse_press_event(self, event: QtGui.QMouseEvent) -> None:
-    #     if event.button() == QtCore.Qt.LeftButton and self.under_mouse():
-    #         self.window_handle().start_system_move()
     def move_event(self, event: QtGui.QMoveEvent) -> None:
         logging.info(event)
         self.__parent.move(self.x(), self.y())
@@ -217,7 +213,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__side_panel_control_widget_layout.add_layout(
             self.__side_panel_layout_for_user)
 
-        self.__side_panel_floating_widget = FloatingWidget(
+        self.__side_panel_overlay_widget = QOverlayWidget(
             self, self.__side_panel_widget_sender,
             self.__side_panel_main_layout)
 
@@ -274,11 +270,11 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         logging.info(event)
         self.__switch_vertical_and_horizontal_window()
         self.__visibility_of_window_control_buttons()
-        self.__side_panel_floating_widget.resize(self.width(), self.height())
+        self.__side_panel_overlay_widget.resize(self.width(), self.height())
 
     def move_event(self, event: QtGui.QMoveEvent) -> None:
         logging.info(event)
-        self.__side_panel_floating_widget.move(self.x(), self.y())
+        self.__side_panel_overlay_widget.move(self.x(), self.y())
 
     def __darken_side_panel(self, color: tuple = (0, 0, 0, 0.1)) -> None:
         """..."""
@@ -303,13 +299,13 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
     def __on_view_panel_button(self) -> None:
         self.__side_panel_main_layout.remove_widget(
             self.__side_panel_widget_sender)
-        self.__side_panel_floating_widget.main_layout().add_widget(
+        self.__side_panel_overlay_widget.main_layout().add_widget(
             self.__side_panel_widget_sender)
 
         self.__side_panel_headerbar.set_left_control_buttons_visible(False)
 
         self.__side_panel_widget_sender.set_style_sheet(self.style_sheet())
-        self.__side_panel_floating_widget.show()
+        self.__side_panel_overlay_widget.show()
 
     def __switch_vertical_and_horizontal_window(self) -> None:
         # Vertical
@@ -337,9 +333,9 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
             if self.platform_settings().window_use_global_menu():
                 self.__side_panel_headerbar.set_left_control_buttons_visible(
                     False)
-            self.__side_panel_floating_widget.close_panel()
+            self.__side_panel_overlay_widget.close_panel()
         elif self.is_full_screen():
             self.__side_panel_headerbar.set_left_control_buttons_visible(False)
-            self.__side_panel_floating_widget.close_panel()
+            self.__side_panel_overlay_widget.close_panel()
         else:
             self.__side_panel_headerbar.set_left_control_buttons_visible(True)
