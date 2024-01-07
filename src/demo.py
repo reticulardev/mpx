@@ -58,6 +58,7 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
 
     def on_btn(self):
         self.lbl.set_text(self.sender().text())
+        self.close_side_panel()
 
 
 class Application(object):

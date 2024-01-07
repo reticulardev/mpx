@@ -244,6 +244,10 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         # Resize
         self._resize_event_signal.connect(self._resize_event)
 
+    def close_side_panel(self) -> None:
+        """..."""
+        self.__side_panel_overlay_widget.close_panel()
+
     def frame_view_layout(self) -> QtWidgets.QVBoxLayout:
         """..."""
         return self.__frame_view_layout
