@@ -160,6 +160,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__minimum_width = 340
         self.__minimum_height = 200
         self.__border_size = 12
+        self.__side_panel_has_opened = False
         self.__panel_width = 250
         self.__horizontal_and_vertical_flip_width = 650
         self.__is_vertical = False
@@ -332,9 +333,12 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__side_panel_overlay.show()
         self.side_panel_has_opened_signal.emit(
             'QSidePanelApplicationWindow.side_panel_has_opened_signal')
+        self.__side_panel_has_opened = True
 
     def __side_panel_was_closed_signal(self, event: QtCore.Signal) -> None:
-        self.side_panel_was_closed_signal.emit(event)
+        if self.__side_panel_has_opened:
+            self.side_panel_was_closed_signal.emit(event)
+            self.__side_panel_has_opened = False
 
     def __switch_vertical_and_horizontal_window(self) -> None:
         # Vertical

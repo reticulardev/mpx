@@ -33,13 +33,13 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.tbutton.set_icon(QtGui.QIcon.from_theme('search'))
         self.side_panel_header_bar().add_widget_to_right(self.tbutton)
 
-        for i in ['Home', 'Download', 'Image', 'Document', 'Video', 'Music']:
-            btn = QtWidgets.QPushButton(str(i))
+        for i in ['Downloads', 'Images', 'Documents', 'Videos', 'Music']:
+            btn = QtWidgets.QPushButton(i)
             btn.clicked.connect(self.on_btn)
             self.side_panel_layout().add_widget(btn)
 
-        self.lbl = QtWidgets.QPushButton('...')
-        self.frame_view_layout().add_widget(self.lbl)
+        self.image = QtWidgets.QLabel()
+        self.frame_view_layout().add_widget(self.image)
         self.frame_view_layout().set_alignment(QtCore.Qt.AlignCenter)
 
         self.set_style_sheet(
@@ -63,7 +63,8 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.set_panel_fixed_width(200)
 
     def on_btn(self) -> None:
-        self.lbl.set_text(self.sender().text())
+        self.image.set_pixmap(QtGui.QIcon.from_theme(
+            f'folder-{self.sender().text().lower()}').pixmap(64, 64))
         self.close_side_panel()
 
     @staticmethod
