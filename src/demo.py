@@ -26,7 +26,7 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
 
         # Title
         self.set_window_title("My custom MPX app")
-        # self.set_header_bar_title(self.window_title())
+        self.set_header_bar_title(self.window_title())
 
         # Search
         self.tbutton = QtWidgets.QToolButton()
@@ -60,6 +60,7 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.side_panel_was_closed_signal.connect(self.panel_closed)
         self.switched_to_vertical_signal.connect(self.switched_to_vertical)
         self.switched_to_horizontal_signal.connect(self.switched_to_horizontal)
+        self.set_panel_fixed_width(200)
 
     def on_btn(self) -> None:
         self.lbl.set_text(self.sender().text())
