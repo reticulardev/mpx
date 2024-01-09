@@ -2,6 +2,7 @@
 import logging
 import os
 import sys
+import time
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
@@ -79,7 +80,6 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
         # Panel
         self.__panel_widget = QtWidgets.QWidget()
         self.__panel_widget.set_contents_margins(0, 0, 0, 0)
-        # self.__panel_widget.set_fixed_width(250)
         self.__panel_widget.set_object_name('panelwidgetstyle')
         self.__panel_widget.set_style_sheet(
             '#panelwidgetstyle {'
@@ -122,6 +122,9 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
         self.__h_layout.add_widget(self.__close_widget)
 
         self.set_style_sheet(self.__parent.style_sheet())
+
+    def set_panel_color(self, style):
+        self.__parent_widget.set_style_sheet(style)
 
     def set_fixed_width(self, width: int) -> None:
         self.__panel_widget.set_fixed_width(width)
@@ -293,6 +296,10 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__side_panel_widget_for_width.set_fixed_width(self.__panel_width)
         self.__side_panel_overlay.set_fixed_width(self.__panel_width)
 
+    def remove_panel_contrast(self) -> None:
+        """..."""
+        self.__darken_side_panel((0, 0, 0, 0.0))
+
     def side_panel_header_bar(self) -> QtWidgetsX.QHeaderBar:
         """..."""
         return self.__side_panel_headerbar
@@ -304,14 +311,14 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
     def __darken_side_panel(self, color: tuple = (0, 0, 0, 0.06)) -> None:
         """..."""
         radius = self.platform_settings().window_border_radius()
-
         self.__side_panel_widget_for_width.set_object_name('side_widget_style')
         self.__side_panel_widget_for_width.set_style_sheet(
             '#side_widget_style {'
             'background-color:'
             f'rgba({color[0]}, {color[1]}, {color[2]}, {color[3]});'
+            f'border-top-left-radius: {radius[0]};'
             f'border-bottom-left-radius: {radius[3]};'
-            'margin: 0px 0px 1px 1px; padding: 0px;}')
+            'margin: 1px 0px 1px 1px; padding: 0px;}')
 
     def __initial_width(self) -> int:
         # Vertical
@@ -359,7 +366,6 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
 
     def __switch_to_vertical(self) -> None:
         self.__side_panel_widget_for_width.set_visible(False)
-
         self.__frame_view_headerbar.set_left_control_buttons_visible(True)
         self.__view_panel_button.set_visible(True)
         self.__side_panel_headerbar.set_move_area_as_enable(False)

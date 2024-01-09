@@ -26,19 +26,21 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
 
         # Title
         self.set_window_title("My custom MPX app")
-        self.set_header_bar_title(self.window_title())
+        # self.set_header_bar_title(self.window_title())
 
         # Search
         self.tbutton = QtWidgets.QToolButton()
         self.tbutton.set_icon(QtGui.QIcon.from_theme('search'))
         self.side_panel_header_bar().add_widget_to_right(self.tbutton)
 
-        for i in ['Downloads', 'Images', 'Documents', 'Videos', 'Music']:
+        for i in ['Download', 'Pictures', 'Documents', 'Videos', 'Music']:
             btn = QtWidgets.QPushButton(i)
             btn.clicked.connect(self.on_btn)
             self.side_panel_layout().add_widget(btn)
 
         self.image = QtWidgets.QLabel()
+        self.image.set_pixmap(
+            QtGui.QIcon.from_theme('folder-download-symbolic').pixmap(96, 96))
         self.frame_view_layout().add_widget(self.image)
         self.frame_view_layout().set_alignment(QtCore.Qt.AlignCenter)
 
@@ -60,11 +62,10 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.side_panel_was_closed_signal.connect(self.panel_closed)
         self.switched_to_vertical_signal.connect(self.switched_to_vertical)
         self.switched_to_horizontal_signal.connect(self.switched_to_horizontal)
-        self.set_panel_fixed_width(200)
 
     def on_btn(self) -> None:
         self.image.set_pixmap(QtGui.QIcon.from_theme(
-            f'folder-{self.sender().text().lower()}').pixmap(64, 64))
+            f'folder-{self.sender().text().lower()}-symbolic').pixmap(96, 96))
         self.close_side_panel()
 
     @staticmethod
