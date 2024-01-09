@@ -62,7 +62,7 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.panel_closed_signal.connect(self.panel_closed)
         self.adaptive_mode_signal.connect(self.switched_to_vertical)
         self.wide_mode_signal.connect(self.switched_to_horizontal)
-        self.set_panel_color((0, 255, 0, 0.1))
+        self.set_panel_color((0, 0, 50, 0.1))
 
     def on_btn(self) -> None:
         self.image.set_pixmap(QtGui.QIcon.from_theme(

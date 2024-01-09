@@ -17,7 +17,7 @@ from __feature__ import snake_case
 class QColorWidget(QtWidgets.QWidget):
     """..."""
 
-    def __init__(self, color: str, *args, **kwargs):
+    def __init__(self, color: str, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.set_auto_fill_background(True)
         palette = self.palette()
@@ -27,6 +27,12 @@ class QColorWidget(QtWidgets.QWidget):
         box = QtWidgets.QVBoxLayout()
         self.set_layout(box)
         box.add_widget(QtWidgets.QLabel(' '))
+
+    def __str__(self) -> str:
+        return 'QColorWidget()'
+
+    def __repr__(self) -> str:
+        return 'QColorWidget(QtWidgets.QWidget)'
 
 
 class _QOverlaySidePanel(QtWidgets.QWidget):
@@ -148,8 +154,7 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
     def close_panel(self) -> None:
         self.__panel_box.remove_widget(self.__parent_widget)
         self.__parent_box.add_widget(self.__parent_widget)
-        self.panel_closed_signal.emit(
-            'QSidePanelApplicationWindow.panel_closed_signal')
+        self.panel_closed_signal.emit('panel-closed-signal')
         self.close()
 
     def main_layout(self) -> QtWidgets.QLayout:
@@ -159,6 +164,12 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
         logging.info(event)
         self.__parent.move(self.x(), self.y())
         self.resize(self.__parent.width(), self.__parent.height())
+
+    def __str__(self) -> str:
+        return '_QOverlaySidePanel()'
+
+    def __repr__(self) -> str:
+        return '_QOverlaySidePanel(QtWidgets.QWidget)'
 
 
 class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
@@ -348,8 +359,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__panel_header_bar.set_left_control_buttons_visible(False)
         self.__panel_sender.set_style_sheet(self.style_sheet())
         self.__panel_overlay.show()
-        self.panel_opened_signal.emit(
-            'QSidePanelApplicationWindow.panel_opened_signal')
+        self.panel_opened_signal.emit('panel-opened-signal')
         self.__is_panel_open = True
         self.__panel_overlay.set_panel_color(self.__panel_color)
 
@@ -364,16 +374,14 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
                 self.__horizontal_and_vertical_flip_width):
             self.__is_vertical = True
             self.__switch_to_vertical()
-            self.adaptive_mode_signal.emit(
-                'QSidePanelApplicationWindow.adaptive_mode_signal')
+            self.adaptive_mode_signal.emit('adaptive-mode-signal')
 
         # Horizontal
         elif (self.__is_vertical and self.size().width() >
               self.__horizontal_and_vertical_flip_width):
             self.__is_vertical = False
             self.__switch_to_horizontal()
-            self.wide_mode_signal.emit(
-                'QSidePanelApplicationWindow.wide_mode_signal')
+            self.wide_mode_signal.emit('wide-mode-signal')
 
     def __switch_to_vertical(self) -> None:
         self.__widget_for_panel_width.set_visible(False)
@@ -409,3 +417,9 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__switch_vertical_and_horizontal_window()
         self.__visibility_of_window_control_buttons()
         self.__panel_overlay.resize(self.width(), self.height())
+
+    def __str__(self) -> str:
+        return 'QSidePanelApplicationWindow()'
+
+    def __repr__(self) -> str:
+        return 'QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow)'
