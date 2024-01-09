@@ -15,7 +15,7 @@ from __feature__ import snake_case
 class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
     """..."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """..."""
         super().__init__(*args, **kwargs)
         # Icon
@@ -44,46 +44,33 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.frame_view_layout().add_widget(self.image)
         self.frame_view_layout().set_alignment(QtCore.Qt.AlignCenter)
 
-        self.set_style_sheet(
-            'QToolButton {'
-            '   background: transparent;'
-            '   padding: 2px;'
-            '   border: 0px;'
-            '   border-radius: 3px;}'
-            'QToolButton:hover {'
-            '   background: transparent;'
-            '   padding: 2px;'
-            '   border: 0px;'
-            '   border-radius: 3px;'
-            '   background-color: rgba(127, 127, 127, 0.2);}'
-        )
+        # self.set_style_sheet(
+        #     'QToolButton {'
+        #     '  background: transparent;'
+        #     '  padding: 2px;'
+        #     '  border: 0px;'
+        #     '  border-radius: 3px;}'
+        #     'QToolButton:hover {'
+        #     '  background: transparent;'
+        #     '  padding: 2px;'
+        #     '  border: 0px;'
+        #     '  border-radius: 3px;'
+        #     '  background-color: #0055ff;}'
+        #     'QApplicationWindow {'
+        #     '  border: 1px solid #ffff00;'
+        #     '  background-color: #555500;'
+        #     '  border-radius: 15px;}')
 
-        self.panel_opened_signal.connect(self.panel_has_opened)
-        self.panel_closed_signal.connect(self.panel_closed)
-        self.adaptive_mode_signal.connect(self.switched_to_vertical)
-        self.wide_mode_signal.connect(self.switched_to_horizontal)
-        self.set_panel_color((0, 0, 50, 0.1))
+        self.panel_opened_signal.connect(lambda event: print(event))
+        self.panel_closed_signal.connect(lambda event: print(event))
+        self.adaptive_mode_signal.connect(lambda event: print(event))
+        self.wide_mode_signal.connect(lambda event: print(event))
+        # self.set_panel_color((0, 50, 0, 0.5))
 
     def on_btn(self) -> None:
         self.image.set_pixmap(QtGui.QIcon.from_theme(
             f'folder-{self.sender().text().lower()}-symbolic').pixmap(96, 96))
         self.close_panel()
-
-    @staticmethod
-    def panel_has_opened(event: QtCore.Signal) -> None:
-        print(event)
-
-    @staticmethod
-    def panel_closed(event: QtCore.Signal) -> None:
-        print(event)
-
-    @staticmethod
-    def switched_to_vertical(event: QtCore.Signal) -> None:
-        print(event)
-
-    @staticmethod
-    def switched_to_horizontal(event: QtCore.Signal):
-        print(event)
 
 
 class Application(object):

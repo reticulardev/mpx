@@ -44,17 +44,19 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
             parent: QtWidgets,
             panel: QtWidgets,
             panel_box: QtWidgets.QLayout,
-            *args, **kwargs):
+            *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         # Param
         self.__parent = parent
-        self.__parent_widget = panel
+        self.__parent_panel = panel
         self.__parent_box = panel_box
 
         # Settings
         self.set_attribute(QtCore.Qt.WA_TranslucentBackground)
         self.set_window_flags(
             QtCore.Qt.FramelessWindowHint | QtCore.Qt.Popup | QtCore.Qt.Dialog)
+
+        self.set_style_sheet(self.__parent.style_sheet())
 
         self.__background_color = self.__parent.palette(
             ).color(QtGui.QPalette.Window)
@@ -71,13 +73,7 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
         self.__main_frame.set_contents_margins(0, 0, 0, 0)
         self.__main_frame.set_object_name('__mainframewidgetstyle')
         self.__main_frame.set_style_sheet(
-            '#__mainframewidgetstyle {'
-            'background-color: rgba(0, 0, 0, 0.0);'
-            f'border-top-left-radius: {self.__border_radius[0]};'
-            f'border-top-right-radius: {self.__border_radius[1]};'
-            f'border-bottom-left-radius: {self.__border_radius[3]};'
-            f'border-bottom-right-radius: {self.__border_radius[2]};'
-            '}')
+            '#__mainframewidgetstyle {background-color: rgba(0, 0, 0, 0.0);}')
         self.__main_box.add_widget(self.__main_frame)
 
         self.__horizontal_frame_box = QtWidgets.QHBoxLayout()
@@ -87,18 +83,6 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
 
         # Panel background
         self.__panel_background = QtWidgets.QWidget()
-        self.__panel_background.set_object_name('__panelbackground')
-        self.__panel_background.set_style_sheet(
-            '#__panelbackground {'
-            'background-color: rgba('
-            f'{self.__background_color.red()}, '
-            f'{self.__background_color.green()}, '
-            f'{self.__background_color.blue()}, '
-            f'{self.__background_color.alpha_f()});'
-            f'border-top-left-radius: {self.__border_radius[0]};'
-            f'border-bottom-left-radius: {self.__border_radius[3]};'
-            f'border-top-right-radius: 0;'
-            'border-bottom-right-radius: 0;}')
         self.__horizontal_frame_box.add_widget(self.__panel_background)
 
         self.__panel_background_box = QtWidgets.QVBoxLayout()
@@ -123,7 +107,7 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
         self.__panel_background.set_graphics_effect(self.__shadow_effect)
 
         class CloseButton(QtWidgets.QWidget):
-            def __init__(self, parent_win):
+            def __init__(self, parent_win) -> None:
                 super().__init__()
                 self.__parent = parent_win
 
@@ -133,27 +117,20 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
 
         self.__close_button = CloseButton(self)
         self.__horizontal_frame_box.add_widget(self.__close_button)
-        self.set_style_sheet(self.__parent.style_sheet())
 
     def set_fixed_width(self, width: int) -> None:
         self.__panel.set_fixed_width(width)
         self.__panel_background.set_fixed_width(width)
 
-    def set_panel_color(self, rgba_color: tuple) -> None:
-        self.__panel.set_object_name('panel_widget_style')
-        self.__panel.set_style_sheet(
-            '#panel_widget_style {'
-            'background-color:'
-            f'rgba({rgba_color[0]}, {rgba_color[1]}, '
-            f'{rgba_color[2]}, {rgba_color[3]});'
-            f'border-top-left-radius: {self.__border_radius[0]};'
-            f'border-top-right-radius: 0;'
-            f'border-bottom-left-radius: {self.__border_radius[3]};'
-            'border-bottom-right-radius: 0;}')
+    def panel_background(self) -> QtWidgets.QWidget:
+        return self.__panel_background
+
+    def panel(self) -> QtWidgets.QWidget:
+        return self.__panel
 
     def close_panel(self) -> None:
-        self.__panel_box.remove_widget(self.__parent_widget)
-        self.__parent_box.add_widget(self.__parent_widget)
+        self.__panel_box.remove_widget(self.__parent_panel)
+        self.__parent_box.add_widget(self.__parent_panel)
         self.panel_closed_signal.emit('panel-closed-signal')
         self.close()
 
@@ -194,6 +171,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__panel_color = (0, 0, 0, 0.06)
         self.__horizontal_and_vertical_flip_width = 650
         self.__is_vertical = False
+        self.__application_style_sheet = self.__application_style()
 
         # Settings
         self.__screen = self.screen()
@@ -262,7 +240,9 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
             self.__panel_was_closed_signal)
         self.__panel_overlay.set_fixed_width(self.__panel_width)
 
+        self.__set_panel_background_color()
         self.__set_panel_color()
+        self._set_style_signal.connect(lambda _: self.set_panel_color())
 
         # Frame view
         self.__frame_view_top_box = QtWidgets.QVBoxLayout()
@@ -288,6 +268,19 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
 
         # Resize
         self._resize_event_signal.connect(self._resize_event)
+        self.set_style_sheet(
+            'QToolButton {'
+            '   background: transparent;'
+            '   padding: 2px;'
+            '   border: 0px;'
+            '   border-radius: 3px;}'
+            'QToolButton:hover {'
+            '   background: transparent;'
+            '   padding: 2px;'
+            '   border: 0px;'
+            '   border-radius: 3px;'
+            '   background-color: rgba(127, 127, 127, 0.2);}'
+        )
 
     def close_panel(self) -> None:
         """..."""
@@ -315,9 +308,12 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         """..."""
         self.__horizontal_and_vertical_flip_width = width
 
-    def set_panel_color(self, rgba: tuple) -> None:
+    def set_panel_color(self, rgba: tuple = None) -> None:
         """..."""
-        self.__panel_color = rgba
+        self.__application_style_sheet = self.__application_style()
+        if rgba:
+            self.__panel_color = rgba
+        self.__set_panel_background_color()
         self.__set_panel_color()
 
     def set_panel_fixed_width(self, width: int) -> None:
@@ -334,18 +330,43 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         """..."""
         return self.__panel_for_user
 
+    def __application_style(self) -> str:
+        """..."""
+        return '; '.join(
+            [x.replace('#QApplicationWindow', '').replace('{', '').strip()
+             for x in self.style_sheet().split('}')
+             if 'QApplicationWindow' in x][-1].split(';'))
+
+    def __set_panel_background_color(self) -> None:
+        """..."""
+        self.__panel_overlay.panel_background().set_object_name(
+            '__overlaypanelbackgroundstyle')
+        self.__panel_overlay.panel_background().set_style_sheet(
+            '#__overlaypanelbackgroundstyle {'
+            f'{self.__application_style_sheet}'
+            'border: 0px; '
+            'border-top-right-radius: 0;'
+            'border-bottom-right-radius: 0}')
+
     def __set_panel_color(self) -> None:
         """..."""
-        radius = self.platform_settings().window_border_radius()
-        self.__widget_for_panel_width.set_object_name('side_widget_style')
-        self.__widget_for_panel_width.set_style_sheet(
-            '#side_widget_style {'
+        panel_style = (
+            f'{self.__application_style_sheet}'
             'background-color: rgba('
             f'{self.__panel_color[0]}, {self.__panel_color[1]}, '
             f'{self.__panel_color[2]}, {self.__panel_color[3]});'
-            f'border-top-left-radius: {radius[0]};'
-            f'border-bottom-left-radius: {radius[3]};'
-            'margin: 1px 0px 1px 1px; padding: 0px;}')
+            'border: 0px; '
+            'border-top-right-radius: 0;'
+            'border-bottom-right-radius: 0;'
+            'padding: 0px;')
+
+        self.__widget_for_panel_width.set_object_name('__panelwidthstyle')
+        self.__widget_for_panel_width.set_style_sheet(
+            '#__panelwidthstyle {' + panel_style + 'margin: 1px 0px 1px 1px;}')
+
+        self.__panel_overlay.panel().set_object_name('__paneloverlaystyle')
+        self.__panel_overlay.panel().set_style_sheet(
+            '#__paneloverlaystyle {' + panel_style + '}')
 
     def __initial_width(self) -> int:
         if self.__screen.size().width() < self.__panel_width < 500:
@@ -361,7 +382,6 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__panel_overlay.show()
         self.panel_opened_signal.emit('panel-opened-signal')
         self.__is_panel_open = True
-        self.__panel_overlay.set_panel_color(self.__panel_color)
 
     def __panel_was_closed_signal(self, event: QtCore.Signal) -> None:
         if self.__is_panel_open:
