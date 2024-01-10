@@ -168,10 +168,11 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__border_size = 12
         self.__is_panel_open = False
         self.__panel_width = 250
-        self.__panel_color = (0, 0, 0, 0.06)
+        self.__panel_color_default = (0, 0, 0, 0.2)
+        self.__panel_color = self.__panel_color_default
         self.__horizontal_and_vertical_flip_width = 650
         self.__is_vertical = False
-        self.__application_style_sheet = self.__application_style()
+        self.__application_style_sheet = self.__parse_application_style()
 
         # Settings
         self.__screen = self.screen()
@@ -242,7 +243,6 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
 
         self.__set_panel_background_color()
         self.__set_panel_color()
-        self._set_style_signal.connect(lambda _: self.set_panel_color())
 
         # Frame view
         self.__frame_view_top_box = QtWidgets.QVBoxLayout()
@@ -266,21 +266,10 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
             self.__border_size, 0, self.__border_size, self.__border_size)
         self.__frame_view_top_box.add_layout(self.__frame_view_box, 9)
 
-        # Resize
-        self._resize_event_signal.connect(self._resize_event)
-        self.set_style_sheet(
-            'QToolButton {'
-            '   background: transparent;'
-            '   padding: 2px;'
-            '   border: 0px;'
-            '   border-radius: 3px;}'
-            'QToolButton:hover {'
-            '   background: transparent;'
-            '   padding: 2px;'
-            '   border: 0px;'
-            '   border-radius: 3px;'
-            '   background-color: rgba(127, 127, 127, 0.2);}'
-        )
+        # Signals
+        self._resize_event_signal.connect(self.__resize_event)
+        self._set_style_signal.connect(lambda _: self.set_panel_color())
+        self._reset_style_signal.connect(self.__reset_style)
 
     def close_panel(self) -> None:
         """..."""
@@ -293,6 +282,10 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
     def horizontal_and_vertical_flip_width(self) -> int:
         """..."""
         return self.__horizontal_and_vertical_flip_width
+
+    def panel_color(self) -> tuple:
+        """..."""
+        return self.__panel_color
 
     def set_header_bar_icon(self, icon: QtGui.QIcon) -> None:
         """..."""
@@ -310,9 +303,8 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
 
     def set_panel_color(self, rgba: tuple = None) -> None:
         """..."""
-        self.__application_style_sheet = self.__application_style()
-        if rgba:
-            self.__panel_color = rgba
+        self.__application_style_sheet = self.__parse_application_style()
+        self.__panel_color = rgba if rgba else self.__panel_color_default
         self.__set_panel_background_color()
         self.__set_panel_color()
 
@@ -330,7 +322,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         """..."""
         return self.__panel_for_user
 
-    def __application_style(self) -> str:
+    def __parse_application_style(self) -> str:
         """..."""
         return '; '.join(
             [x.replace('#QApplicationWindow', '').replace('{', '').strip()
@@ -367,6 +359,11 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__panel_overlay.panel().set_object_name('__paneloverlaystyle')
         self.__panel_overlay.panel().set_style_sheet(
             '#__paneloverlaystyle {' + panel_style + '}')
+
+        # self.__panel_main_box.remove_widget(self.__panel_sender)
+        # self.__panel_overlay.main_layout().add_widget(self.__panel_sender)
+        self.__panel_sender.set_style_sheet(self.style_sheet())
+        # self.__panel_overlay.close_panel()
 
     def __initial_width(self) -> int:
         if self.__screen.size().width() < self.__panel_width < 500:
@@ -428,15 +425,19 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         else:
             self.__panel_header_bar.set_left_control_buttons_visible(True)
 
-    def move_event(self, event: QtGui.QMoveEvent) -> None:
-        logging.info(event)
-        self.__panel_overlay.move(self.x(), self.y())
-
-    def _resize_event(self, event: QtGui.QResizeEvent) -> None:
+    def __resize_event(self, event: QtGui.QResizeEvent) -> None:
         logging.info(event)
         self.__switch_vertical_and_horizontal_window()
         self.__visibility_of_window_control_buttons()
         self.__panel_overlay.resize(self.width(), self.height())
+
+    def __reset_style(self, event) -> None:
+        logging.info(event)
+        self.set_panel_color()
+
+    def move_event(self, event: QtGui.QMoveEvent) -> None:
+        logging.info(event)
+        self.__panel_overlay.move(self.x(), self.y())
 
     def __str__(self) -> str:
         return 'QSidePanelApplicationWindow()'

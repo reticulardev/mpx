@@ -44,28 +44,40 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.frame_view_layout().add_widget(self.image)
         self.frame_view_layout().set_alignment(QtCore.Qt.AlignCenter)
 
-        # self.set_style_sheet(
-        #     'QToolButton {'
-        #     '  background: transparent;'
-        #     '  padding: 2px;'
-        #     '  border: 0px;'
-        #     '  border-radius: 3px;}'
-        #     'QToolButton:hover {'
-        #     '  background: transparent;'
-        #     '  padding: 2px;'
-        #     '  border: 0px;'
-        #     '  border-radius: 3px;'
-        #     '  background-color: #0055ff;}'
-        #     'QApplicationWindow {'
-        #     '  border: 1px solid #ffff00;'
-        #     '  background-color: #555500;'
-        #     '  border-radius: 15px;}')
+        self.set_style_button = QtWidgets.QPushButton('Set style')
+        self.set_style_button.clicked.connect(self.on_set_style_button)
+        self.frame_view_layout().add_widget(self.set_style_button)
 
         self.panel_opened_signal.connect(lambda event: print(event))
         self.panel_closed_signal.connect(lambda event: print(event))
         self.adaptive_mode_signal.connect(lambda event: print(event))
         self.wide_mode_signal.connect(lambda event: print(event))
-        # self.set_panel_color((0, 50, 0, 0.5))
+        self.save_style = self.style_sheet()
+        self.save_panel_color = self.panel_color()
+
+    def on_set_style_button(self) -> None:
+        if self.set_style_button.text() == 'Set style':
+            self.set_style_sheet(
+                'QApplicationWindow {'
+                '  background-color: rgba(44, 44, 50, 0.9);'
+                '  border: 1px solid #283690;'
+                '  border-radius: 10px;}'
+                'QToolButton {'
+                '  background: transparent;'
+                '  padding: 2px;'
+                '  border: 0px;'
+                '  border-radius: 3px;'
+                '  background-color: rgba(100, 100, 100, 0.2);}'
+                'QToolButton:hover {'
+                '  background: transparent;'
+                '  background-color: rgba(100, 100, 100, 0.3);}'
+                'QPushButton {'
+                '  border: 1px solid rgba(100, 100, 100, 0.3);}')
+            self.set_panel_color((30, 30, 30, 0.5))
+            self.set_style_button.set_text('Reset style')
+        else:
+            self.reset_style()
+            self.set_style_button.set_text('Set style')
 
     def on_btn(self) -> None:
         self.image.set_pixmap(QtGui.QIcon.from_theme(
