@@ -52,8 +52,33 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.panel_closed_signal.connect(lambda event: print(event))
         self.adaptive_mode_signal.connect(lambda event: print(event))
         self.wide_mode_signal.connect(lambda event: print(event))
-        self.save_style = self.style_sheet()
-        self.save_panel_color = self.panel_color()
+
+        # menu
+        self.context_menux = QtWidgets.QMenu()
+        menu_action = self.context_menux.add_action('Hello')
+        menu_action.triggered.connect(self.on_context_menu)
+
+        menu_action = self.context_menux.add_action('World')
+        menu_action.triggered.connect(self.on_context_menu)
+
+        self.file_menu = QtWidgets.QMenu('File')
+        self.context_menux.add_menu(self.file_menu)
+
+        menu_action = self.file_menu.add_action('Open')
+        menu_action.triggered.connect(self.on_context_menu)
+
+        menu_action = self.file_menu.add_action('Save')
+        menu_action.triggered.connect(self.on_context_menu)
+
+        # new
+        self.ctx_menu = QtWidgetsMPX.QContextMenu(self)
+        self.set_context_menu(self.ctx_menu)
+
+    def context_menu_event(self, event):
+        self.ctx_menu.exec(event.global_pos())
+
+    def on_context_menu(self):
+        print(self.sender().text())
 
     def on_set_style_button(self) -> None:
         if self.set_style_button.text() == 'Set style':
@@ -72,8 +97,11 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
                 '  background: transparent;'
                 '  background-color: rgba(100, 100, 100, 0.3);}'
                 'QPushButton {'
-                '  border: 1px solid rgba(100, 100, 100, 0.3);}')
-            self.set_panel_color((30, 30, 30, 0.5))
+                '  border: 1px solid rgba(100, 100, 100, 0.3);}'
+                'QContextMenu {'
+                '  background-color: rgba(44, 44, 50, 0.9);'
+                '  border: 1px solid #283690;}')
+            self.set_panel_color((79, 54, 95, 0.5))
             self.set_style_button.set_text('Reset style')
         else:
             self.reset_style()

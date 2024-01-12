@@ -10,29 +10,8 @@ SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(SRC_DIR)
 sys.path.append(os.path.join(SRC_DIR, 'pysidex/src/'))
 
-from MPX.pysidex.src.PySideX import QtWidgetsX
+from PySideX import QtWidgetsX
 from __feature__ import snake_case
-
-
-class QColorWidget(QtWidgets.QWidget):
-    """..."""
-
-    def __init__(self, color: str, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.set_auto_fill_background(True)
-        palette = self.palette()
-        palette.set_color(QtGui.QPalette.Window, QtGui.QColor(color))
-        self.set_palette(palette)
-
-        box = QtWidgets.QVBoxLayout()
-        self.set_layout(box)
-        box.add_widget(QtWidgets.QLabel(' '))
-
-    def __str__(self) -> str:
-        return 'QColorWidget()'
-
-    def __repr__(self) -> str:
-        return 'QColorWidget(QtWidgets.QWidget)'
 
 
 class _QOverlaySidePanel(QtWidgets.QWidget):
@@ -57,11 +36,6 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
             QtCore.Qt.FramelessWindowHint | QtCore.Qt.Popup | QtCore.Qt.Dialog)
 
         self.set_style_sheet(self.__parent.style_sheet())
-
-        self.__background_color = self.__parent.palette(
-            ).color(QtGui.QPalette.Window)
-        self.__border_radius = self.__parent.platform_settings(
-            ).window_border_radius()
 
         # Main layout
         self.__main_box = QtWidgets.QVBoxLayout()
@@ -117,6 +91,7 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
 
         self.__close_button = CloseButton(self)
         self.__horizontal_frame_box.add_widget(self.__close_button)
+        self.__context_menu = None
 
     def set_fixed_width(self, width: int) -> None:
         self.__panel.set_fixed_width(width)
@@ -141,6 +116,13 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
         logging.info(event)
         self.__parent.move(self.x(), self.y())
         self.resize(self.__parent.width(), self.__parent.height())
+
+    def context_menu_event(self, event):
+        if not self.__context_menu:
+            self.__context_menu = self.__parent.context_menu()
+
+        if self.__context_menu:
+            self.__context_menu.exec(event.global_pos())
 
     def __str__(self) -> str:
         return '_QOverlaySidePanel()'
@@ -168,7 +150,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__border_size = 12
         self.__is_panel_open = False
         self.__panel_width = 250
-        self.__panel_color_default = (0, 0, 0, 0.2)
+        self.__panel_color_default = (0, 0, 0, 0.05)
         self.__panel_color = self.__panel_color_default
         self.__horizontal_and_vertical_flip_width = 650
         self.__is_vertical = False
@@ -267,9 +249,9 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__frame_view_top_box.add_layout(self.__frame_view_box, 9)
 
         # Signals
-        self._resize_event_signal.connect(self.__resize_event)
-        self._set_style_signal.connect(lambda _: self.set_panel_color())
-        self._reset_style_signal.connect(self.__reset_style)
+        self.resize_event_signal.connect(self.__resize_event)
+        self.set_style_signal.connect(lambda _: self.set_panel_color())
+        self.reset_style_signal.connect(self.__reset_style)
 
     def close_panel(self) -> None:
         """..."""
@@ -444,3 +426,8 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
 
     def __repr__(self) -> str:
         return 'QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow)'
+
+
+class QContextMenu(QtWidgetsX.QContextMenu):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
