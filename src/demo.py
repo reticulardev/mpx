@@ -31,12 +31,12 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         # Search
         self.tbutton = QtWidgets.QToolButton()
         self.tbutton.set_icon(QtGui.QIcon.from_theme('search'))
-        self.side_panel_header_bar().add_widget_to_right(self.tbutton)
+        self.panel_header_bar().add_widget_to_right(self.tbutton)
 
         for i in ['Download', 'Pictures', 'Documents', 'Videos', 'Music']:
             btn = QtWidgets.QPushButton(i)
             btn.clicked.connect(self.on_btn)
-            self.side_panel_layout().add_widget(btn)
+            self.panel_layout().add_widget(btn)
 
         self.image = QtWidgets.QLabel()
         self.image.set_pixmap(
@@ -74,7 +74,7 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         # self.ctx_menu = QtWidgetsMPX.QContextMenu(self)
         # self.set_context_menu(self.ctx_menu)
 
-        self.context_menu_label = QtWidgets.QLabel('Context menu text here')
+        self.context_menu_label = QtWidgets.QLabel('Menu text here')
         self.frame_view_layout().add_widget(self.context_menu_label)
 
         self.qcontext_menu = QtWidgetsMPX.QContextMenu(self)
@@ -83,6 +83,8 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.qcontext_menu.add_action('Have', self.on_context_action)
         self.qcontext_menu.add_action('No', self.on_context_action)
         self.qcontext_menu.add_action('Power', self.on_context_action)
+        # https://stackoverflow.com/questions/44666427/
+        # how-to-add-to-default-context-menu-in-python-textbox-using-pyqt5
 
     def context_menu_event(self, event):
         self.qcontext_menu.exec(event.global_pos())
