@@ -54,31 +54,41 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.wide_mode_signal.connect(lambda event: print(event))
 
         # menu
-        self.context_menux = QtWidgets.QMenu()
-        menu_action = self.context_menux.add_action('Hello')
-        menu_action.triggered.connect(self.on_context_menu)
-
-        menu_action = self.context_menux.add_action('World')
-        menu_action.triggered.connect(self.on_context_menu)
-
-        self.file_menu = QtWidgets.QMenu('File')
-        self.context_menux.add_menu(self.file_menu)
-
-        menu_action = self.file_menu.add_action('Open')
-        menu_action.triggered.connect(self.on_context_menu)
-
-        menu_action = self.file_menu.add_action('Save')
-        menu_action.triggered.connect(self.on_context_menu)
+        # self.context_menux = QtWidgets.QMenu()
+        # menu_action = self.context_menux.add_action('Hello')
+        # menu_action.triggered.connect(self.on_context_menu)
+        #
+        # menu_action = self.context_menux.add_action('World')
+        # menu_action.triggered.connect(self.on_context_menu)
+        #
+        # self.file_menu = QtWidgets.QMenu('File')
+        # self.context_menux.add_menu(self.file_menu)
+        #
+        # menu_action = self.file_menu.add_action('Open')
+        # menu_action.triggered.connect(self.on_context_menu)
+        #
+        # menu_action = self.file_menu.add_action('Save')
+        # menu_action.triggered.connect(self.on_context_menu)
 
         # new
-        self.ctx_menu = QtWidgetsMPX.QContextMenu(self)
-        self.set_context_menu(self.ctx_menu)
+        # self.ctx_menu = QtWidgetsMPX.QContextMenu(self)
+        # self.set_context_menu(self.ctx_menu)
+
+        self.context_menu_label = QtWidgets.QLabel('Context menu text here')
+        self.frame_view_layout().add_widget(self.context_menu_label)
+
+        self.qcontext_menu = QtWidgetsMPX.QContextMenu(self)
+        self.set_context_menu(self.qcontext_menu)
+        self.qcontext_menu.add_action('You', self.on_context_action)
+        self.qcontext_menu.add_action('Have', self.on_context_action)
+        self.qcontext_menu.add_action('No', self.on_context_action)
+        self.qcontext_menu.add_action('Power', self.on_context_action)
 
     def context_menu_event(self, event):
-        self.ctx_menu.exec(event.global_pos())
+        self.qcontext_menu.exec(event.global_pos())
 
-    def on_context_menu(self):
-        print(self.sender().text())
+    def on_context_action(self):
+        self.context_menu_label.set_text(self.sender().text())
 
     def on_set_style_button(self) -> None:
         if self.set_style_button.text() == 'Set style':
