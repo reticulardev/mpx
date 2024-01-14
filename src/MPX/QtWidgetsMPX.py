@@ -47,7 +47,7 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
         self.__main_frame.set_contents_margins(0, 0, 0, 0)
         self.__main_frame.set_object_name('__mainframewidgetstyle')
         self.__main_frame.set_style_sheet(
-            '#__mainframewidgetstyle {background-color: rgba(0, 0, 0, 0.0);}')
+            '#__mainframewidgetstyle {background-color: rgba(0, 0, 0, 0.2);}')
         self.__main_box.add_widget(self.__main_frame)
 
         self.__horizontal_frame_box = QtWidgets.QHBoxLayout()
@@ -118,7 +118,8 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
         self.__parent_box.remove_widget(self.__parent_panel)
         self.__panel_box.add_widget(self.__parent_panel)
 
-        self.__parent.set_left_control_buttons_visible(False)
+        # self.__parent.set_left_control_buttons_visible(False)
+        self.__parent.set_enabled(False)
         self.__parent_panel.set_style_sheet(self.style_sheet())
         self.show()
 
@@ -291,6 +292,11 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         """..."""
         return self.__panel_for_user
 
+    def set_close_window_button_visible(self, visible: bool) -> None:
+        """..."""
+        self.__panel_header_bar.set_close_window_button_visible(visible)
+        self.__frame_view_header_bar.set_close_window_button_visible(visible)
+
     def set_header_bar_icon(self, icon: QtGui.QIcon) -> None:
         """..."""
         self.set_window_icon(icon)
@@ -308,6 +314,18 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
     def set_left_control_buttons_visible(self, visible: bool) -> None:
         """..."""
         self.__panel_header_bar.set_left_control_buttons_visible(visible)
+
+    def set_maximize_window_button_visible(self, visible: bool) -> None:
+        """..."""
+        self.__panel_header_bar.set_maximize_window_button_visible(visible)
+        self.__frame_view_header_bar.set_maximize_window_button_visible(
+            visible)
+
+    def set_minimize_window_button_visible(self, visible: bool) -> None:
+        """..."""
+        self.__panel_header_bar.set_minimize_window_button_visible(visible)
+        self.__frame_view_header_bar.set_minimize_window_button_visible(
+            visible)
 
     def set_panel_color(self, rgba: tuple = None) -> None:
         """..."""

@@ -18,6 +18,10 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
     def __init__(self, *args, **kwargs) -> None:
         """..."""
         super().__init__(*args, **kwargs)
+        # self.set_minimize_window_button_visible(False)
+        # self.set_maximize_window_button_visible(False)
+        # self.set_close_window_button_visible(False)
+
         # Icon
         icon_path = os.path.join(SRC_DIR, 'icon.svg')
         self.__app_icon = QtGui.QIcon(QtGui.QPixmap(icon_path))
@@ -47,11 +51,12 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
 
         # Image context menu
         self.image_qcontext = QtWidgetsMPX.QContextMenu(self)
-        self.image_qcontext.add_action('Delete', self.on_context_action)
-        self.image_qcontext.add_action('Save', self.on_context_action)
+        self.image_qcontext.add_action('Delete', self.__context_menu_cal)
+        self.image_qcontext.add_action('Save', self.__context_menu_cal)
 
         self.image.set_context_menu_policy(QtGui.Qt.CustomContextMenu)
-        self.image.customContextMenuRequested.connect(self.image_context_menu)
+        self.image.customContextMenuRequested.connect(
+            self.context_menu_for_image)
 
         # Style button
         self.set_style_button = QtWidgets.QPushButton('Set style')
@@ -69,20 +74,19 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
 
         self.qcontext_menu = QtWidgetsMPX.QContextMenu(self)
         self.set_global_context_menu(self.qcontext_menu)
-        self.qcontext_menu.add_action('You', self.on_context_action)
-        self.qcontext_menu.add_action('Have', self.on_context_action)
-        self.qcontext_menu.add_action('No', self.on_context_action)
-        self.qcontext_menu.add_action('Power', self.on_context_action)
+        self.qcontext_menu.add_action('You', self.__context_menu_cal)
+        self.qcontext_menu.add_action('Have', self.__context_menu_cal)
+        self.qcontext_menu.add_action('No', self.__context_menu_cal)
+        self.qcontext_menu.add_action('Power', self.__context_menu_cal)
 
     def context_menu_event(self, event):
-        print(event)
         self.qcontext_menu.exec(event.global_pos())
 
-    def on_context_action(self):
-        self.context_menu_label.set_text(self.sender().text())
-
-    def image_context_menu(self):
+    def context_menu_for_image(self):
         self.image_qcontext.exec(QtGui.QCursor.pos())
+
+    def __context_menu_cal(self):
+        self.context_menu_label.set_text(self.sender().text())
 
     def on_set_style_button(self) -> None:
         if self.set_style_button.text() == 'Set style':
