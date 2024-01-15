@@ -118,8 +118,7 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
         self.__parent_box.remove_widget(self.__parent_panel)
         self.__panel_box.add_widget(self.__parent_panel)
 
-        # self.__parent.set_left_control_buttons_visible(False)
-        self.__parent.set_enabled(False)
+        self.__parent.set_left_control_buttons_visible(False)
         self.__parent_panel.set_style_sheet(self.style_sheet())
         self.show()
 

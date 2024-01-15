@@ -63,10 +63,10 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.set_style_button.clicked.connect(self.on_set_style_button)
         self.frame_view_layout().add_widget(self.set_style_button)
 
-        self.panel_opened_signal.connect(lambda event: print(event))
-        self.panel_closed_signal.connect(lambda event: print(event))
-        self.adaptive_mode_signal.connect(lambda event: print(event))
-        self.wide_mode_signal.connect(lambda event: print(event))
+        # self.panel_opened_signal.connect(lambda event: print(event))
+        # self.panel_closed_signal.connect(lambda event: print(event))
+        # self.adaptive_mode_signal.connect(lambda event: print(event))
+        # self.wide_mode_signal.connect(lambda event: print(event))
 
         # Text  and their context menu (Global: use context_menu_event)
         self.context_menu_label = QtWidgets.QLabel('Menu text here')
