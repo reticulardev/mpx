@@ -50,7 +50,7 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.frame_view_layout().set_alignment(QtCore.Qt.AlignCenter)
 
         # Image context menu
-        self.image_qcontext = QtWidgetsMPX.QContextMenu(self)
+        self.image_qcontext = QtWidgetsMPX.QQuickContextMenu(self)
         self.image_qcontext.add_action(
             'Delete', lambda: self.__context_menu_cal('Delete'))
         self.image_qcontext.add_action(
@@ -74,13 +74,15 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
         self.context_menu_label = QtWidgets.QLabel('Menu text here')
         self.frame_view_layout().add_widget(self.context_menu_label)
 
-        self.qcontext_menu = QtWidgetsMPX.QContextMenu(self)
-        self.set_global_context_menu(self.qcontext_menu)
+        self.qcontext_menu = QtWidgetsMPX.QQuickContextMenu(self)
+        self.set_quick_context_menu(self.qcontext_menu)
         self.qcontext_menu.add_action(
             'Copy', lambda: self.__context_menu_cal('Copy'),
+            icon=QtGui.QIcon.from_theme('edit-copy'),
             shortcut=QtGui.QKeySequence('Ctrl+C'))
         self.qcontext_menu.add_action(
             'Paste', lambda: self.__context_menu_cal('Paste'),
+            icon=QtGui.QIcon.from_theme('edit-paste'),
             shortcut=QtGui.QKeySequence('Ctrl+V'))
 
     def context_menu_event(self, event):

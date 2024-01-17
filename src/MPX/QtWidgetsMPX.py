@@ -455,6 +455,6 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         return 'QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow)'
 
 
-class QContextMenu(QtWidgetsX.QContextMenu):
+class QQuickContextMenu(QtWidgetsX.QQuickContextMenu):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
