@@ -101,7 +101,7 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
 
     def context_menu_event(self, event):
         if not self.__context_menu:
-            self.__context_menu = self.__parent.context_menu()
+            self.__context_menu = self.__parent.quick_context_menu()
 
         if self.__context_menu:
             self.__context_menu.exec(event.global_pos())
@@ -166,9 +166,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__application_style_sheet = self.__parse_application_style()
 
         # Settings
-        self.__screen = self.screen()
         self.set_window_title('MPX Application Window')
-
         self.set_minimum_width(self.__minimum_width)
         self.set_minimum_height(self.__minimum_height)
         self.resize(self.__initial_width(), 500)
@@ -384,7 +382,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
         self.__panel_sender.set_style_sheet(self.style_sheet())
 
     def __initial_width(self) -> int:
-        if self.__screen.size().width() < self.__panel_width < 500:
+        if self.screen().size().width() < self.__panel_width < 500:
             return self.__minimum_width
         return 750
 
