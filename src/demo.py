@@ -51,8 +51,10 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
 
         # Image context menu
         self.image_qcontext = QtWidgetsMPX.QContextMenu(self)
-        self.image_qcontext.add_action('Delete', self.__context_menu_cal)
-        self.image_qcontext.add_action('Save', self.__context_menu_cal)
+        self.image_qcontext.add_action(
+            'Delete', lambda: self.__context_menu_cal('Delete'))
+        self.image_qcontext.add_action(
+            'Save', lambda: self.__context_menu_cal('Save'))
 
         self.image.set_context_menu_policy(QtGui.Qt.CustomContextMenu)
         self.image.customContextMenuRequested.connect(
@@ -74,10 +76,12 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
 
         self.qcontext_menu = QtWidgetsMPX.QContextMenu(self)
         self.set_global_context_menu(self.qcontext_menu)
-        self.qcontext_menu.add_action('You', self.__context_menu_cal)
-        self.qcontext_menu.add_action('Have', self.__context_menu_cal)
-        self.qcontext_menu.add_action('No', self.__context_menu_cal)
-        self.qcontext_menu.add_action('Power', self.__context_menu_cal)
+        self.qcontext_menu.add_action(
+            'Copy', lambda: self.__context_menu_cal('Copy'),
+            shortcut=QtGui.QKeySequence('Ctrl+C'))
+        self.qcontext_menu.add_action(
+            'Paste', lambda: self.__context_menu_cal('Paste'),
+            shortcut=QtGui.QKeySequence('Ctrl+V'))
 
     def context_menu_event(self, event):
         self.qcontext_menu.exec(event.global_pos())
@@ -85,8 +89,8 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
     def context_menu_for_image(self):
         self.image_qcontext.exec(QtGui.QCursor.pos())
 
-    def __context_menu_cal(self):
-        self.context_menu_label.set_text(self.sender().text())
+    def __context_menu_cal(self, text):
+        self.context_menu_label.set_text(text)
 
     def on_set_style_button(self) -> None:
         if self.set_style_button.text() == 'Set style':
@@ -108,7 +112,11 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
                 '  border: 1px solid rgba(100, 100, 100, 0.3);}'
                 'QContextMenu {'
                 '  background-color: rgba(44, 44, 50, 0.9);'
-                '  border: 1px solid #283690;}')
+                '  border: 1px solid #283690;}'
+                'QContextMenu {'
+                'border: 1px solid rgba(125, 77, 136, 0.6);}'
+                'QContextMenuButton {'
+                'border: 1px solid rgba(77, 125, 77, 0.6);}')
             self.set_panel_color((79, 54, 95, 0.5))
             self.set_style_button.set_text('Reset style')
         else:
