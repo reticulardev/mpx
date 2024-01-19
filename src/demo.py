@@ -85,6 +85,14 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
             icon=QtGui.QIcon.from_theme('edit-paste'),
             shortcut=QtGui.QKeySequence('Ctrl+V'))
 
+        self.qcontext_menu.add_separator()
+        self.qcontext_menu.set_separators_margins(8, 0, 8, 0)
+
+        self.qcontext_menu.add_action(
+            'Delete', lambda: self.__context_menu_cal('Delete'))
+        self.qcontext_menu.add_action(
+            'Save', lambda: self.__context_menu_cal('Save'))
+
     def context_menu_event(self, event):
         self.qcontext_menu.exec(event.global_pos())
 
