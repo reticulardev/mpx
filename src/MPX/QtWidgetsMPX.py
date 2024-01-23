@@ -427,7 +427,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
 
     def __visibility_of_window_control_buttons(self) -> None:
         if self.is_maximized():
-            if self.platform_settings().window_use_global_menu():
+            if self.platform_settings().gui_env.use_global_menu():
                 self.__panel_header_bar.set_left_control_buttons_visible(False)
             self.__panel_overlay.close_panel()
         elif self.is_full_screen():

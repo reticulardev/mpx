@@ -86,7 +86,7 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
             shortcut=QtGui.QKeySequence('Ctrl+V'))
 
         self.qcontext_menu.add_separator()
-        self.qcontext_menu.set_separators_margins(8, 0, 8, 0)
+        # self.qcontext_menu.set_separators_margins(8, 0, 8, 0)
 
         self.qcontext_menu.add_action(
             'Delete', lambda: self.__context_menu_cal('Delete'))
