@@ -18,24 +18,19 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
     """..."""
     panel_closed_signal = QtCore.Signal(object)
 
-    def __init__(
-            self,
-            parent: QtWidgets,
-            panel: QtWidgets,
-            panel_box: QtWidgets.QLayout,
-            *args, **kwargs) -> None:
+    def __init__(self, widget: QtWidgets.QWidget, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         # Param
-        self.__parent = parent
-        self.__parent_panel = panel
-        self.__parent_box = panel_box
+        self.__panel_widget = widget
+        self.__panel_widget_box = self.__panel_widget.parent().layout()
+        self.__toplevel = self.__panel_widget.parent().window()
 
         # Settings
         self.set_attribute(QtCore.Qt.WA_TranslucentBackground)
         self.set_window_flags(
             QtCore.Qt.FramelessWindowHint | QtCore.Qt.Popup | QtCore.Qt.Dialog)
 
-        self.set_style_sheet(self.__parent.style_sheet())
+        self.set_style_sheet(self.__toplevel.style_sheet())
 
         # Main layout
         self.__main_box = QtWidgets.QVBoxLayout()
@@ -45,9 +40,6 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
 
         self.__main_frame = QtWidgets.QWidget()
         self.__main_frame.set_contents_margins(0, 0, 0, 0)
-        self.__main_frame.set_object_name('__mainframewidgetstyle')
-        self.__main_frame.set_style_sheet(
-            '#__mainframewidgetstyle {background-color: rgba(0, 0, 0, 0.2);}')
         self.__main_box.add_widget(self.__main_frame)
 
         self.__horizontal_frame_box = QtWidgets.QHBoxLayout()
@@ -94,14 +86,14 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
         self.__context_menu = None
 
     def close_panel(self) -> None:
-        self.__panel_box.remove_widget(self.__parent_panel)
-        self.__parent_box.add_widget(self.__parent_panel)
+        self.__panel_box.remove_widget(self.__panel_widget)
+        self.__panel_widget_box.add_widget(self.__panel_widget)
         self.panel_closed_signal.emit('panel-closed-signal')
         self.close()
 
     def context_menu_event(self, event):
         if not self.__context_menu:
-            self.__context_menu = self.__parent.quick_context_menu()
+            self.__context_menu = self.__toplevel.quick_context_menu()
 
         if self.__context_menu:
             self.__context_menu.exec(event.global_pos())
@@ -111,15 +103,15 @@ class _QOverlaySidePanel(QtWidgets.QWidget):
     
     def move_event(self, event: QtGui.QMoveEvent) -> None:
         logging.info(event)
-        self.__parent.move(self.x(), self.y())
-        self.resize(self.__parent.width(), self.__parent.height())
+        self.__toplevel.move(self.x(), self.y())
+        self.resize(self.__toplevel.width(), self.__toplevel.height())
 
     def open_panel(self) -> None:
-        self.__parent_box.remove_widget(self.__parent_panel)
-        self.__panel_box.add_widget(self.__parent_panel)
+        self.__panel_widget_box.remove_widget(self.__panel_widget)
+        self.__panel_box.add_widget(self.__panel_widget)
 
-        self.__parent.set_left_control_buttons_visible(False)
-        self.__parent_panel.set_style_sheet(self.style_sheet())
+        self.__toplevel.set_left_control_buttons_visible(False)
+        self.__panel_widget.set_style_sheet(self.style_sheet())
         self.show()
 
     def panel(self) -> QtWidgets.QWidget:
@@ -224,8 +216,7 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
             self.__border_size, 0, self.__border_size, self.__border_size)
         self.__panel_internal_box.add_layout(self.__panel_for_user)
 
-        self.__panel_overlay = _QOverlaySidePanel(
-            self, self.__panel_sender, self.__panel_main_box)
+        self.__panel_overlay = _QOverlaySidePanel(self.__panel_sender)
         self.__panel_overlay.panel_closed_signal.connect(
             self.__panel_was_closed_signal)
         self.__panel_overlay.set_fixed_width(self.__panel_width)
