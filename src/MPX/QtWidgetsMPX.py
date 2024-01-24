@@ -368,9 +368,9 @@ class QSidePanelApplicationWindow(QtWidgetsX.QApplicationWindow):
 
         self.__panel_overlay.panel().set_object_name('__paneloverlaystyle')
         self.__panel_overlay.panel().set_style_sheet(
-            '#__paneloverlaystyle {' + panel_style + '}')
+            self.style_sheet() + '#__paneloverlaystyle {' + panel_style + '}')
 
-        self.__panel_sender.set_style_sheet(self.style_sheet())
+        # self.__panel_sender.set_style_sheet(self.style_sheet())
 
     def __initial_width(self) -> int:
         if self.screen().size().width() < self.__panel_width < 500:

@@ -12,6 +12,27 @@ from MPX import QtWidgetsMPX
 from __feature__ import snake_case
 
 
+class GenericWindow(QtWidgets.QMainWindow):
+    """..."""
+
+    def __init__(self, *args, **kwargs) -> None:
+        """..."""
+        super().__init__(*args, **kwargs)
+        self.cw = QtWidgets.QWidget()
+        self.set_central_widget(self.cw)
+
+        self.ll = QtWidgets.QVBoxLayout()
+        self.cw.set_layout(self.ll)
+
+        self.btn = QtWidgets.QPushButton('style')
+        self.ll.add_widget(self.btn)
+
+        self.btn.clicked.connect(self.onbtn)
+
+    def onbtn(self):
+        print(self.style_sheet())
+
+
 class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
     """..."""
 
@@ -30,7 +51,7 @@ class Window(QtWidgetsMPX.QSidePanelApplicationWindow):
 
         # Title
         self.set_window_title("My custom MPX app")
-        # self.set_header_bar_title(self.window_title())
+        self.set_header_bar_title(self.window_title())
 
         # Search
         self.tbutton = QtWidgets.QToolButton()
